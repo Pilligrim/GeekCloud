@@ -1,5 +1,7 @@
 package manager.model;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,6 +24,16 @@ public class FileInfo {
     }
 
     private String filename;
+    private Icon icon;
+
+    public Icon getIcon() {
+        return icon;
+    }
+
+    public void setIcon(Icon icon) {
+        this.icon = icon;
+    }
+
     private FileType type;
     private long size;
     private LocalDateTime lastModified;
@@ -67,6 +79,7 @@ public class FileInfo {
                 this.size = -1L;
             }
             this.lastModified = LocalDateTime.ofInstant(Files.getLastModifiedTime(path).toInstant(), ZoneOffset.ofHours(3));
+            this.icon = FileSystemView.getFileSystemView().getSystemIcon(path.toFile());
         } catch (IOException e) {
             throw new RuntimeException("Unable to create file info from path");
         }

@@ -7,9 +7,12 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import manager.model.FileInfo;
 
+
+import javax.swing.text.html.ImageView;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.FileSystems;
@@ -32,43 +35,39 @@ public class PanelController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        TableColumn<FileInfo, String> fileTypeColumn = new TableColumn<>();
-        fileTypeColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getType().getName()));
-        fileTypeColumn.setPrefWidth(24);
+
+        TableColumn<FileInfo, ImageView> iconColumn = new TableColumn<>();
+        iconColumn.setCellValueFactory(new PropertyValueFactory<>("icon"));
+        iconColumn.setPrefWidth(25);
+        iconColumn.setStyle("-fx-table-cell-border-color: transparent;");
+        iconColumn.setSortable(false);
 
         TableColumn<FileInfo, String> filenameColumn = new TableColumn<>("Имя");
         filenameColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getFilename()));
         filenameColumn.setPrefWidth(240);
 
+        TableColumn<FileInfo, String> fileExtColumn = new TableColumn<>("Тип");
+        fileExtColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getType()));
+        fileExtColumn.setPrefWidth(70);
+
         TableColumn<FileInfo, Long> fileSizeColumn = new TableColumn<>("Размер");
         fileSizeColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getSize()));
-        fileSizeColumn.setCellFactory(column -> {
-            return new TableCell<FileInfo, Long>() {
-                @Override
-                protected void updateItem(Long item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (item == null || empty) {
-                        setText(null);
-                        setStyle("");
-                    } else {
-                        String text = String.format("%,d bytes", item);
-                        if (item == -1L) {
-                            text = "[DIR]";
-                        }
-                        setText(text);
-                    }
-                }
-            };
+        fileSizeColumn.setCellFactory(column -> new TableCell<FileInfo, Long>() {
+            @Override
+            protected void updateItem(Long item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(getSizeString(item));
+            }
         });
         fileSizeColumn.setPrefWidth(120);
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         TableColumn<FileInfo, String> fileDateColumn = new TableColumn<>("Дата изменения");
         fileDateColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getLastModified().format(dtf)));
-        fileDateColumn.setPrefWidth(120);
+        fileDateColumn.setPrefWidth(170);
 
-        filesTable.getColumns().addAll(fileTypeColumn, filenameColumn, fileSizeColumn, fileDateColumn);
-        filesTable.getSortOrder().add(fileTypeColumn);
+        filesTable.getColumns().addAll(iconColumn, filenameColumn, fileExtColumn, fileSizeColumn, fileDateColumn);
+        filesTable.getSortOrder().add(fileExtColumn);
 
         disksBox.getItems().clear();
         for (Path p : FileSystems.getDefault().getRootDirectories()) {
@@ -124,5 +123,21 @@ public class PanelController implements Initializable {
 
     public String getCurrentPath() {
         return pathField.getText();
+    }
+
+    private String getSizeString(Long size) {
+        if (size == null) {
+            return "";
+        } else if (size / 1073741824 > 0) {
+            return size / 1073741824 + " GB";
+        } else if (size / 1048576 > 0) {
+            return size / 1048576 + " MB";
+        } else if (size / 1024 > 0) {
+            return size / 1024 + " KB";
+        } else if (size / 1024 <= 0 && size > 0) {
+            return size + " B";
+        } else {
+            return "";
+        }
     }
 }

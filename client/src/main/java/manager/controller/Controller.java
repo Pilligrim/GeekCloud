@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.VBox;
+import manager.netty.Network;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,6 +16,7 @@ import java.nio.file.Paths;
 public class Controller {
     @FXML
     VBox leftPanel, rightPanel;
+    private Network network;
 
     public void btnExitAction(ActionEvent actionEvent) {
         Platform.exit();
@@ -50,5 +52,12 @@ public class Controller {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Не удалось скопировать указанный файл", ButtonType.OK);
             alert.showAndWait();
         }
+    }
+
+    public void exitAction() {
+        if (network != null) {
+            network.close();
+        }
+        Platform.exit();
     }
 }

@@ -1,0 +1,21 @@
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# Compiled class file
+*.class
+
+# IntellijIdea files
+.idea/
+*.iml
+*.iws
+out
+
+# Log file
+*.log
+
+# Maven
+log/
+target/

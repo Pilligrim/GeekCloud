@@ -5,12 +5,16 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import manager.controller.Controller;
 
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("/main.fxml"));
-        primaryStage.setTitle("Java File Manager [GeekBrains]");
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/main.fxml"));
+        Parent root = fxmlLoader.load();
+        Controller controller = fxmlLoader.getController();
+        primaryStage.setTitle("File Manager");
+        primaryStage.setOnCloseRequest(event -> controller.exitAction());
         primaryStage.setScene(new Scene(root, 1280, 600));
         primaryStage.show();
     }
